@@ -6,16 +6,19 @@ const footerLinks = {
     { href: "/consultants", label: "Browse Consultants" },
     { href: "/problems", label: "Post a Problem" },
     { href: "/pricing", label: "Pricing" },
+    { href: "/register", label: "Get Started" },
   ],
   Company: [
-    { href: "#", label: "About" },
-    { href: "#", label: "Blog" },
-    { href: "#", label: "Careers" },
+    { href: "/about", label: "About" },
+    { href: "/blog", label: "Blog" },
+    { href: "/careers", label: "Careers" },
+    { href: "mailto:press@cons2go.com", label: "Press" },
   ],
   Legal: [
-    { href: "#", label: "Terms of Service" },
-    { href: "#", label: "Privacy Policy" },
-    { href: "#", label: "Cookie Policy" },
+    { href: "/terms", label: "Terms of Service" },
+    { href: "/privacy", label: "Privacy Policy" },
+    { href: "/cookies", label: "Cookie Policy" },
+    { href: "/refunds", label: "Refund Policy" },
   ],
 };
 

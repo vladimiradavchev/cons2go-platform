@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Mail, Lock, User, Eye, EyeOff, CheckCircle2, Briefcase, TrendingUp } from "lucide-react";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -11,63 +11,173 @@ export default function RegisterPage() {
   const [role, setRole] = useState<"client" | "consultant">("client");
   const [showPw, setShowPw] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const pwStrength = password.length >= 12 ? "strong" : password.length >= 8 ? "medium" : password.length > 0 ? "weak" : "";
+  const pwBarColor = pwStrength === "strong" ? "bg-emerald-500" : pwStrength === "medium" ? "bg-amber-500" : "bg-red-500";
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-extrabold">Create your account</h1>
-            <p className="mt-2 text-sm text-[var(--muted-foreground)]">Join 50,000+ users on cons2go</p>
+    <div className="flex min-h-[calc(100vh-4rem)]">
+      {/* Left decorative side */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-bl from-[var(--primary)] to-[var(--accent)] items-center justify-center p-12">
+        <div className="max-w-md text-white">
+          <div className="flex items-center gap-3 mb-8">
+            <Briefcase size={32} />
+            <span className="text-xl font-bold">Start your journey</span>
+          </div>
+
+          {/* Benefits for each role */}
+          {role === "client" ? (
+            <>
+              <p className="text-lg leading-relaxed text-white/90 mb-8">Join 50,000+ businesses that use cons2go to find the right expert for every challenge.</p>
+              <div className="flex flex-col gap-4">
+                {[
+                  "Post problems and get proposals from verified experts",
+                  "Compare consultants by rating, price, and expertise",
+                  "Pay securely through escrow — only release when satisfied",
+                  "Save up to 60% vs. traditional consulting firms",
+                ].map((b) => (
+                  <div key={b} className="flex items-start gap-3">
+                    <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-white/80" />
+                    <p className="text-sm">{b}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-lg leading-relaxed text-white/90 mb-8">Join 12,500+ consultants who earn $8,500/month on average through cons2go.</p>
+              <div className="flex flex-col gap-4">
+                {[
+                  "Set your own rates and schedule — you're in control",
+                  "Access a global marketplace of businesses with real problems",
+                  "Get paid securely through escrow within 48 hours of delivery",
+                  "Build your reputation with verified reviews and ratings",
+                ].map((b) => (
+                  <div key={b} className="flex items-start gap-3">
+                    <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-white/80" />
+                    <p className="text-sm">{b}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="mt-10 grid grid-cols-3 gap-6 text-center">
+            <div>
+              <p className="text-3xl font-extrabold">12.5K+</p>
+              <p className="text-sm text-white/60 mt-1">Consultants</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold">85K+</p>
+              <p className="text-sm text-white/60 mt-1">Problems Solved</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold">50+</p>
+              <p className="text-sm text-white/60 mt-1">Countries</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Form side */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-md">
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl font-extrabold">Create your account</h1>
+            <p className="mt-2 text-[var(--muted-foreground)]">Start solving challenges in under 2 minutes</p>
+          </div>
+
+          {/* Social signup */}
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <button className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background)] py-2.5 text-sm font-medium hover:bg-[var(--muted)] transition-colors">
+              <svg className="h-4 w-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+              Google
+            </button>
+            <button className="flex items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background)] py-2.5 text-sm font-medium hover:bg-[var(--muted)] transition-colors">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              GitHub
+            </button>
+          </div>
+
+          <div className="my-6 flex items-center gap-3">
+            <div className="flex-1 h-px bg-[var(--border)]" />
+            <span className="text-xs text-[var(--muted-foreground)]">or sign up with email</span>
+            <div className="flex-1 h-px bg-[var(--border)]" />
           </div>
 
           {/* Role selector */}
-          <div className="mt-6 flex gap-2 p-1 rounded-xl bg-[var(--muted)]">
-            <button onClick={() => setRole("client")} className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-all ${role === "client" ? "bg-[var(--background)] shadow-sm" : "text-[var(--muted-foreground)]"}`}>I need help</button>
-            <button onClick={() => setRole("consultant")} className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-all ${role === "consultant" ? "bg-[var(--background)] shadow-sm" : "text-[var(--muted-foreground)]"}`}>I&apos;m a consultant</button>
+          <div className="flex gap-2 p-1.5 rounded-xl bg-[var(--muted)]">
+            <button
+              onClick={() => setRole("client")}
+              className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-all ${role === "client" ? "bg-[var(--background)] shadow-sm text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}`}
+            >
+              I need help
+            </button>
+            <button
+              onClick={() => setRole("consultant")}
+              className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-all ${role === "consultant" ? "bg-[var(--background)] shadow-sm text-[var(--foreground)]" : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"}`}
+            >
+              I&apos;m a consultant
+            </button>
           </div>
 
           <div className="mt-6 flex flex-col gap-5">
             <div>
               <label className="text-sm font-medium">Full Name</label>
-              <div className="relative mt-1">
-                <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+              <div className="relative mt-1.5">
+                <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium">Email</label>
-              <div className="relative mt-1">
-                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+              <label className="text-sm font-medium">Work Email</label>
+              <div className="relative mt-1.5">
+                <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
               </div>
             </div>
             <div>
               <label className="text-sm font-medium">Password</label>
-              <div className="relative mt-1">
-                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
-                <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters" className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] py-2.5 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">
+              <div className="relative mt-1.5">
+                <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]" />
+                <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 8 characters" className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] py-3 pl-10 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors">
                   {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {pwStrength && (
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex-1 h-1.5 rounded-full bg-[var(--muted)] overflow-hidden">
+                    <div className={`h-full rounded-full transition-all ${pwStrength === "strong" ? "w-full" : pwStrength === "medium" ? "w-2/3" : "w-1/3"} ${pwBarColor}`} />
+                  </div>
+                  <span className={`text-xs font-medium capitalize ${pwStrength === "strong" ? "text-emerald-600" : pwStrength === "medium" ? "text-amber-600" : "text-red-500"}`}>{pwStrength}</span>
+                </div>
+              )}
             </div>
+
             {role === "consultant" && (
               <div>
-                <label className="text-sm font-medium">Your Expertise</label>
-                <input type="text" placeholder="e.g., Cloud Architecture, M&A, Growth Marketing" className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
+                <label className="text-sm font-medium">Primary Area of Expertise</label>
+                <input type="text" placeholder="e.g., Cloud Architecture, M&A, Growth Marketing" className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
               </div>
             )}
-            <label className="flex items-start gap-2 text-sm cursor-pointer">
-              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1" />
-              <span className="text-[var(--muted-foreground)]">I agree to the <a href="#" className="text-[var(--primary)] underline">Terms of Service</a> and <a href="#" className="text-[var(--primary)] underline">Privacy Policy</a></span>
+
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 h-4 w-4 rounded accent-[var(--primary)]" />
+              <span className="text-xs text-[var(--muted-foreground)] leading-relaxed">
+                I agree to cons2go&apos;s <a href="/terms" className="text-[var(--primary)] underline">Terms of Service</a>, <a href="/privacy" className="text-[var(--primary)] underline">Privacy Policy</a>, and {role === "consultant" ? <><a href="/consultant-agreement" className="text-[var(--primary)] underline">Consultant Agreement</a></> : "the platform guidelines"}.
+              </span>
             </label>
-            <Link href="/dashboard" className="flex items-center justify-center gap-2 rounded-full bg-[var(--primary)] py-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--primary-dark)]">
+
+            <Link
+              href="/dashboard"
+              className="flex items-center justify-center gap-2 rounded-xl bg-[var(--primary)] py-3.5 text-sm font-semibold text-white transition-all hover:bg-[var(--primary-dark)] shadow-lg shadow-[var(--primary)]/20"
+            >
               Create Account <ArrowRight size={16} />
             </Link>
-            <p className="text-center text-xs text-[var(--muted-foreground)]">
+
+            <p className="text-center text-sm text-[var(--muted-foreground)]">
               Already have an account?{" "}
-              <Link href="/login" className="text-[var(--primary)] hover:underline">Log in</Link>
+              <Link href="/login" className="text-[var(--primary)] font-medium hover:underline">Log in</Link>
             </p>
           </div>
         </div>
