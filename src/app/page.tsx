@@ -1,68 +1,35 @@
 import Link from "next/link";
 import { ArrowRight, Shield, Zap, Users, Star, CheckCircle, Briefcase, TrendingUp, MessageCircle } from "lucide-react";
+import { getSiteContent } from "@/lib/cms";
+import type { Feature, Testimonial, HomepageContent } from "@/types/cms";
 
-const features = [
-  {
-    icon: Shield,
-    title: "Verified Experts",
-    desc: "Every consultant is vetted for credentials, experience, and track record. No guesswork.",
-  },
-  {
-    icon: Zap,
-    title: "Problem-First Matching",
-    desc: "Post your challenge and let the best consultants come to you with tailored proposals.",
-  },
-  {
-    icon: Users,
-    title: "All Fields, One Platform",
-    desc: "Business, tech, legal, finance, marketing — find specialists no matter your industry.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Built-In Communication",
-    desc: "Secure messaging, video calls, and file sharing — all inside the platform.",
-  },
-  {
-    icon: Briefcase,
-    title: "Flexible Engagement",
-    desc: "Hourly, project-based, or retainer — book consultants the way your business works.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Results You Can Track",
-    desc: "See ROI metrics, satisfaction scores, and outcomes for every consultant.",
-  },
+const iconMap: Record<string, React.ElementType> = {
+  Shield, Zap, Users, MessageCircle, Briefcase, TrendingUp,
+};
+
+const defaultFeatures: Feature[] = [
+  { icon: "Shield", title: "Verified Experts", desc: "Every consultant is vetted for credentials, experience, and track record. No guesswork." },
+  { icon: "Zap", title: "Problem-First Matching", desc: "Post your challenge and let the best consultants come to you with tailored proposals." },
+  { icon: "Users", title: "All Fields, One Platform", desc: "Business, tech, legal, finance, marketing — find specialists no matter your industry." },
+  { icon: "MessageCircle", title: "Built-In Communication", desc: "Secure messaging, video calls, and file sharing — all inside the platform." },
+  { icon: "Briefcase", title: "Flexible Engagement", desc: "Hourly, project-based, or retainer — book consultants the way your business works." },
+  { icon: "TrendingUp", title: "Results You Can Track", desc: "See ROI metrics, satisfaction scores, and outcomes for every consultant." },
 ];
 
-const testimonials = [
-  {
-    quote: "We cut our consulting costs by 60% and got better results. The bidding model means real competition.",
-    name: "Sarah K.",
-    role: "COO, TechScale",
-    avatar: "SK",
-  },
-  {
-    quote: "As a consultant, I doubled my client base in 3 months. The platform does the marketing for you.",
-    name: "David M.",
-    role: "Independent Strategy Consultant",
-    avatar: "DM",
-  },
-  {
-    quote: "Posted a supply chain problem at 9am, had 5 proposals by noon. Solved it by Friday.",
-    name: "Elena R.",
-    role: "VP Operations, LogiFlow",
-    avatar: "ER",
-  },
+const defaultTestimonials: Testimonial[] = [
+  { quote: "We cut our consulting costs by 60% and got better results. The bidding model means real competition.", name: "Sarah K.", role: "COO, TechScale", avatar: "SK" },
+  { quote: "As a consultant, I doubled my client base in 3 months. The platform does the marketing for you.", name: "David M.", role: "Independent Strategy Consultant", avatar: "DM" },
+  { quote: "Posted a supply chain problem at 9am, had 5 proposals by noon. Solved it by Friday.", name: "Elena R.", role: "VP Operations, LogiFlow", avatar: "ER" },
 ];
 
-const stats = [
+const defaultStats = [
   { value: "12,500+", label: "Verified Consultants" },
   { value: "85,000+", label: "Problems Solved" },
   { value: "4.9/5", label: "Average Satisfaction" },
   { value: "48h", label: "Avg. First Response" },
 ];
 
-function FeatureCard({ icon: Icon, title, desc }: { icon: typeof ArrowRight; title: string; desc: string }) {
+function FeatureCard({ icon: Icon, title, desc }: { icon: React.ElementType; title: string; desc: string }) {
   return (
     <div className="group rounded-2xl border border-[var(--border)] bg-[var(--background)] p-8 transition-all hover:shadow-lg hover:border-[var(--primary)] hover:-translate-y-1">
       <div className="mb-5 inline-flex rounded-xl bg-[var(--muted)] p-3 text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white transition-colors">
@@ -74,7 +41,7 @@ function FeatureCard({ icon: Icon, title, desc }: { icon: typeof ArrowRight; tit
   );
 }
 
-function TestimonialCard({ quote, name, role, avatar }: { quote: string; name: string; role: string; avatar: string }) {
+function TestimonialCard({ quote, name, role, avatar }: Testimonial) {
   return (
     <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-8">
       <div className="mb-5 flex gap-1">
@@ -123,22 +90,38 @@ function PricingCard({ title, price, features, highlighted }: { title: string; p
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const content = await getSiteContent();
+  const homepage: HomepageContent = content?.homepage || {};
+
+  const features: Feature[] = homepage.features || defaultFeatures;
+  const testimonials: Testimonial[] = homepage.testimonials || defaultTestimonials;
+  const stats = homepage.stats || defaultStats;
+  const heroTitle = homepage.heroTitle || "";
+  const heroDesc = homepage.heroDesc || "";
+  const ctaTitle = homepage.ctaTitle || "";
+  const ctaDesc = homepage.ctaDesc || "";
+  const ctaButtonText = homepage.ctaButtonText || "";
+  const ctaHref = homepage.ctaHref || "/register";
+
   return (
     <div>
-      {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/5 via-transparent to-[var(--accent)]/5" />
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-36">
           <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl md:leading-tight">
-              Expert{" "}
-              <span className="gradient-text">consulting</span>
-              ,{" "}
-              <span className="gradient-text">solved problems</span>
-            </h1>
+            {heroTitle ? (
+              <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl md:leading-tight" dangerouslySetInnerHTML={{ __html: heroTitle }} />
+            ) : (
+              <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl md:leading-tight">
+                Expert{" "}
+                <span className="gradient-text">consulting</span>
+                ,{" "}
+                <span className="gradient-text">solved problems</span>
+              </h1>
+            )}
             <p className="mx-auto mt-6 max-w-2xl text-lg text-[var(--muted-foreground)]">
-              Post your business challenge. Get proposals from verified experts. Book a consultant who has solved your exact problem before.
+              {heroDesc || "Post your business challenge. Get proposals from verified experts. Book a consultant who has solved your exact problem before."}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
@@ -158,7 +141,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats */}
       <section className="border-y border-[var(--border)] bg-[var(--muted)]">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
@@ -172,7 +154,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-extrabold md:text-4xl">How cons2go Works</h2>
@@ -193,7 +174,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
       <section className="border-t border-[var(--border)] bg-[var(--muted)]">
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-16">
@@ -201,14 +181,14 @@ export default function Home() {
             <p className="mt-3 text-[var(--muted-foreground)]">Everything you need to find and work with the right expert</p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((f) => (
-              <FeatureCard key={f.title} icon={f.icon} title={f.title} desc={f.desc} />
-            ))}
+            {features.map((f) => {
+              const Icon = iconMap[f.icon || "Shield"] || Shield;
+              return <FeatureCard key={f.title} icon={Icon} title={f.title} desc={f.desc} />;
+            })}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-extrabold md:text-4xl">Trusted by Teams Worldwide</h2>
@@ -221,7 +201,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
       <section className="border-t border-[var(--border)] bg-[var(--muted)]">
         <div className="mx-auto max-w-7xl px-6 py-24">
           <div className="text-center mb-16">
@@ -236,13 +215,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="rounded-3xl bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] p-12 text-center text-white md:p-20">
-          <h2 className="text-3xl font-extrabold md:text-4xl">Ready to Solve Your Next Challenge?</h2>
-          <p className="mx-auto mt-4 max-w-xl text-white/80">Join 12,500+ verified consultants and 50,000+ businesses already on the platform.</p>
-          <Link href="/register" className="mt-8 inline-block rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-[var(--primary)] transition-colors hover:bg-zinc-100">
-            Get Started Free
+          <h2 className="text-3xl font-extrabold md:text-4xl">{ctaTitle || "Ready to Solve Your Next Challenge?"}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-white/80">{ctaDesc || "Join thousands of verified consultants and businesses already on the platform."}</p>
+          <Link href={ctaHref} className="mt-8 inline-block rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-[var(--primary)] transition-colors hover:bg-zinc-100">
+            {ctaButtonText || "Get Started Free"}
           </Link>
         </div>
       </section>
