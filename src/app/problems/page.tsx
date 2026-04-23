@@ -47,33 +47,6 @@ export default function ProblemsPage({ problems }: { problems?: Problem[] }) {
     return acc + (match ? parseInt(match[1] + (match[2] || ""), 10) : 0);
   }, 0);
 
-  const isUsingMockData = !(problems && problems.length > 0);
-
-  return (
-    <div>
-      <section className="relative border-b border-[var(--border)] bg-[var(--muted)] overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-6 py-16 md:py-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-extrabold md:text-5xl">
-              The <span className="gradient-text">Problem Marketplace</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-[var(--muted-foreground)]">
-              Post your business challenge. Get proposals from verified experts. Or respond to existing problems and expand your consulting practice.
-            </p>
-          </div>
-        </div>
-      </section>
-      <div className="mx-auto max-w-7xl px-6 py-20 text-center">
-        {isUsingMockData && (
-          <p className="text-sm text-[var(--muted-foreground)] mb-4">
-            Showing demo data. Connect your CMS to see real problems.
-          </p>
-        )}
-        {!isUsingMockData && (
-          <p className="text-lg text-[var(--muted-foreground)]">Problems are being loaded. Please check back soon.</p>
-        )}
-      </div>
-
   return (
     <div>
       <section className="relative border-b border-[var(--border)] bg-[var(--muted)] overflow-hidden">
@@ -91,7 +64,7 @@ export default function ProblemsPage({ problems }: { problems?: Problem[] }) {
           <div className="mt-8 flex flex-wrap justify-center gap-6">
             <div className="flex items-center gap-2 rounded-full bg-[var(--background)] px-4 py-2 shadow-sm">
               <MessageSquare size={14} className="text-[var(--primary)]" />
-              <span className="text-sm font-medium">{problems.length}+ active problems</span>
+              <span className="text-sm font-medium">{data.length}+ active problems</span>
             </div>
             <div className="flex items-center gap-2 rounded-full bg-[var(--background)] px-4 py-2 shadow-sm">
               <Users size={14} className="text-[var(--accent)]" />
@@ -221,7 +194,7 @@ export default function ProblemsPage({ problems }: { problems?: Problem[] }) {
 
             <div className="mt-4 flex flex-col gap-4">
               {filtered.map((p, i) => (
-                <div key={p._id || i} className="group rounded-2xl border border-[var(--border)] bg-[var(--background)] p-6 md:p-8 transition-all hover:border-[var(--primary)] hover:shadow-lg">
+                <div key={i} className="group rounded-2xl border border-[var(--border)] bg-[var(--background)] p-6 md:p-8 transition-all hover:border-[var(--primary)] hover:shadow-lg">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3 flex-wrap">

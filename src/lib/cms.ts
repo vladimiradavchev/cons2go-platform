@@ -1,15 +1,4 @@
 import { createClient } from "next-sanity";
-
-function getSanityClient() {
-  return createClient({
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-    dataset: "production",
-    apiVersion: "2024-01-01",
-    useCdn: true, // CDN for fast reads; set false for uncached admin reads
-    perspective: "published",
-  });
-}
-
 import { queries } from "./cms-queries";
 import type {
   Consultant,
@@ -20,32 +9,49 @@ import type {
   TeamMember,
 } from "@/types/cms";
 
-export async function getAllConsultants(): Promise<Consultant[]> {
+function getSanityClient() {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  if (!projectId) return null;
+  return createClient({
+    projectId,
+    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
+    apiVersion: "2024-01-01",
+    useCdn: true,
+    perspective: "published",
+  });
+}
+
+async function safeFetch<T>(query: string, fallback: T): Promise<T> {
   const client = getSanityClient();
-  return client.fetch<Consultant[]>(queries.consultants);
+  if (!client) return fallback;
+  try {
+    const result = await client.fetch<T>(query);
+    return result ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function getAllConsultants(): Promise<Consultant[]> {
+  return safeFetch<Consultant[]>(queries.consultants, []);
 }
 
 export async function getAllProblems(): Promise<Problem[]> {
-  const client = getSanityClient();
-  return client.fetch<Problem[]>(queries.problems);
+  return safeFetch<Problem[]>(queries.problems, []);
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
-  const client = getSanityClient();
-  return client.fetch<BlogPost[]>(queries.blogPosts);
+  return safeFetch<BlogPost[]>(queries.blogPosts, []);
 }
 
 export async function getSiteContent(): Promise<SiteContent> {
-  const client = getSanityClient();
-  return client.fetch<SiteContent>(queries.siteContent);
+  return safeFetch<SiteContent>(queries.siteContent, {} as SiteContent);
 }
 
 export async function getAllJobs(): Promise<JobPosting[]> {
-  const client = getSanityClient();
-  return client.fetch<JobPosting[]>(queries.jobPostings);
+  return safeFetch<JobPosting[]>(queries.jobPostings, []);
 }
 
 export async function getAllTeamMembers(): Promise<TeamMember[]> {
-  const client = getSanityClient();
-  return client.fetch<TeamMember[]>(queries.teamMembers);
+  return safeFetch<TeamMember[]>(queries.teamMembers, []);
 }
