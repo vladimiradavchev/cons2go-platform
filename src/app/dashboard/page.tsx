@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { MessageSquare, DollarSign, Eye, Star, Bell, Settings, User, TrendingUp, Users, Clock, ChevronRight, CheckCircle2, Send, Award, BarChart3, Activity } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { MessageSquare, DollarSign, Eye, Star, Bell, Settings, User, TrendingUp, Users, Clock, ChevronRight, CheckCircle2, Send, Award, BarChart3, Activity, ShieldCheck, Lock } from "lucide-react";
+import { EscrowBoard } from "@/components/EscrowBoard";
 
 const stats = [
   { icon: MessageSquare, label: "Active Consultations", value: "5", change: "+2 this week", color: "from-blue-500 to-blue-600" },
@@ -60,8 +62,18 @@ const months = ["Nov", "Dec", "Jan", "Feb", "Mar", "Apr"];
 export default function DashboardPage() {
   const [tab, setTab] = useState("overview");
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("tab");
+    if (t && ["overview", "escrow", "projects", "messages", "settings"].includes(t)) {
+      setTab(t);
+    }
+  }, []);
+
   const tabs = [
     { id: "overview", label: "Overview" },
+    { id: "escrow", label: "Escrow & Payments" },
     { id: "projects", label: "Projects" },
     { id: "messages", label: `Messages` },
     { id: "settings", label: "Settings" },
@@ -202,6 +214,33 @@ export default function DashboardPage() {
               </div>
             </div>
           </>
+        )}
+
+        {tab === "escrow" && (
+          <div>
+            <div className="mb-6 rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--primary)]/5 via-transparent to-[var(--accent)]/5 p-6 md:p-8">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck size={20} className="text-[var(--success)]" />
+                    <h2 className="text-xl font-bold">Escrow control room</h2>
+                  </div>
+                  <p className="mt-1 text-sm text-[var(--muted-foreground)] max-w-xl">
+                    Every engagement is funded up front but held by Stripe — we only pay out when you release. Track each project's stage, close milestones, and trigger the payout in one click.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 shrink-0">
+                  <Link href="/checkout" className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--primary-dark)] shadow-lg shadow-[var(--primary)]/20">
+                    <Lock size={14} /> Fund new escrow
+                  </Link>
+                  <Link href="/how-it-works" className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-5 py-2.5 text-sm font-semibold hover:bg-[var(--muted)]">
+                    How it works
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <EscrowBoard />
+          </div>
         )}
 
         {tab === "projects" && (

@@ -5,6 +5,7 @@ const footerLinks = {
   Platform: [
     { href: "/consultants", label: "Browse Consultants" },
     { href: "/problems", label: "Post a Problem" },
+    { href: "/how-it-works", label: "How It Works" },
     { href: "/pricing", label: "Pricing" },
     { href: "/register", label: "Get Started" },
   ],
